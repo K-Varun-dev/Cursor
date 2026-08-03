@@ -1,0 +1,357 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\definecolor{navy}{HTML}{17324D}
+\definecolor{teal}{HTML}{087E8B}
+\definecolor{green}{HTML}{3A7D44}
+\definecolor{orange}{HTML}{D96C06}
+\definecolor{lightblue}{HTML}{EAF4F6}
+\definecolor{lightgrey}{HTML}{F2F4F5}
+
+\usetheme{default}
+\setbeamercolor{structure}{fg=teal}
+\setbeamercolor{frametitle}{fg=navy}
+\setbeamercolor{title}{fg=navy}
+\setbeamercolor{block title}{bg=teal,fg=white}
+\setbeamercolor{block body}{bg=lightblue,fg=black}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{
+    \begin{beamercolorbox}[wd=.84\paperwidth,ht=2.5ex,dp=1ex,leftskip=1em]{author in head/foot}
+      Open Data --- Sensory-Friendly Melbourne CBD Navigation
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[wd=.16\paperwidth,ht=2.5ex,dp=1ex,center]{date in head/foot}
+      \insertframenumber/\inserttotalframenumber
+    \end{beamercolorbox}
+  }
+}
+
+\newcommand{\source}[2]{\href{#1}{\textcolor{teal}{#2}}}
+
+\title{From Open Data to Safer Travel Decisions}
+\subtitle{Open Data contribution to the onboarding presentation}
+\author{Team member: \underline{\hspace{3.5cm}}}
+\date{August 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+  \begin{block}{Purpose}
+    Convert anonymous pedestrian observations and open geographic data into
+    transparent crowd guidance for sensory-sensitive adults travelling through
+    Melbourne CBD.
+  \end{block}
+
+  % Speaker notes:
+  % Our data does not diagnose sensory overload or label a place as universally
+  % safe. It provides evidence about one important stressor---pedestrian density---
+  % so users can make a more informed and independent travel decision.
+\end{frame}
+
+\begin{frame}{The five datasets we actually need}
+  \scriptsize
+  \renewcommand{\arraystretch}{1.18}
+  \begin{tabularx}{\textwidth}{p{2.5cm}p{2.0cm}X p{2.1cm}p{1.5cm}}
+    \toprule
+    \textbf{Open dataset} & \textbf{Access / source refresh} &
+    \textbf{Why it is needed} & \textbf{Our planned refresh} &
+    \textbf{Licence} \\
+    \midrule
+    Past-hour pedestrian counts per minute &
+    API/CSV; about every 15 min &
+    Current pedestrian volume and high-crowd alerts &
+    Every 15 min &
+    CC BY 4.0 \\
+
+    Pedestrian counts per hour (2009--present) &
+    API/CSV; monthly &
+    Sensor-specific baselines, quiet-time patterns and next-hour forecasts &
+    Monthly &
+    CC BY 4.0 \\
+
+    Pedestrian sensor locations &
+    API/CSV; maintained as needed &
+    Coordinates, operating status, direction and relocation notes &
+    Daily metadata check &
+    CC BY 4.0 \\
+
+    Landmarks and places of interest &
+    API/CSV; periodic &
+    Candidate parks, gardens, libraries and public facilities for a break &
+    Once per iteration &
+    CC BY 4.0 \\
+
+    OpenStreetMap pedestrian network &
+    OSM extracts/API; continuously edited &
+    Walkable paths and connections needed to calculate candidate routes &
+    Versioned iteration snapshot &
+    ODbL 1.0 \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.25em}
+  \textbf{Selection rule:} every source must support a user story; no dataset is
+  included merely because it is available.
+
+  % Speaker notes:
+  % The first four sources are from the City of Melbourne. OpenStreetMap fills a
+  % genuine gap: point-based sensor data cannot by itself produce a walking route.
+  % Public-transport GTFS can be added in a later iteration if transport-stop
+  % integration is accepted into scope.
+\end{frame}
+
+\begin{frame}{How each source creates customer value}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \column{0.32\textwidth}
+      \begin{block}{Hindsight\\What happened?}
+        Historical hourly counts show:
+        \begin{itemize}
+          \item recurring peak periods;
+          \item quieter weekday/time combinations;
+          \item seasonal and location differences.
+        \end{itemize}
+        \textbf{User benefit:} plan travel for a historically quieter window.
+      \end{block}
+
+    \column{0.32\textwidth}
+      \begin{block}{Insight\\What is happening?}
+        Live counts joined to sensor locations show:
+        \begin{itemize}
+          \item current relative crowd level;
+          \item monitored low-activity areas;
+          \item nearby candidate refuge locations.
+        \end{itemize}
+        \textbf{User benefit:} avoid an unexpectedly crowded corridor.
+      \end{block}
+
+    \column{0.32\textwidth}
+      \begin{block}{Foresight\\What may happen?}
+        Recent counts compared with historical patterns provide:
+        \begin{itemize}
+          \item next-hour crowd estimate;
+          \item confidence or uncertainty;
+          \item an early rerouting prompt.
+        \end{itemize}
+        \textbf{User benefit:} adjust the journey before conditions worsen.
+      \end{block}
+  \end{columns}
+
+  \vspace{0.25em}
+  \begin{center}
+    \textcolor{orange}{\textbf{Pedestrian volume is a sensory-load proxy, not a
+    guarantee that a route or place is ``safe''.}}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Planned data pipeline and quality controls}
+  \centering
+  \begin{tikzpicture}[
+      node distance=5mm and 4mm,
+      box/.style={
+        draw=teal, rounded corners, fill=lightblue, align=center,
+        minimum width=2.2cm, minimum height=1.0cm, font=\scriptsize
+      },
+      arrow/.style={-{Stealth[length=2mm]}, thick, draw=navy}
+    ]
+    \node[box] (source) {Official APIs\\+ OSM snapshot};
+    \node[box, right=of source] (raw) {Immutable raw\\snapshot + metadata};
+    \node[box, right=of raw] (quality) {Validate, deduplicate\\and quality-flag};
+    \node[box, right=of quality] (db) {Normalised\\PostgreSQL};
+    \node[box, right=of db] (model) {Baseline, forecast\\and route weighting};
+    \node[box, right=of model] (app) {Application API\\map and alerts};
+
+    \draw[arrow] (source) -- (raw);
+    \draw[arrow] (raw) -- (quality);
+    \draw[arrow] (quality) -- (db);
+    \draw[arrow] (db) -- (model);
+    \draw[arrow] (model) -- (app);
+  \end{tikzpicture}
+
+  \vspace{0.8em}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.49\textwidth}
+      \begin{block}{Ingestion controls}
+        \begin{itemize}
+          \item Record source URL, retrieval time and licence.
+          \item Validate IDs, timestamps, coordinates and non-negative counts.
+          \item Upsert on \texttt{(sensor\_id, observed\_at)}.
+          \item Quarantine invalid records; never silently discard them.
+        \end{itemize}
+      \end{block}
+
+    \column{0.49\textwidth}
+      \begin{block}{Interpretation controls}
+        \begin{itemize}
+          \item Distinguish zero movement from sensor/API failure.
+          \item Preserve sensor relocation history and active periods.
+          \item Display freshness, coverage and prediction confidence.
+          \item Version raw snapshots, transformations and model outputs.
+        \end{itemize}
+      \end{block}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Planned ERD: source data, geography and derived insight}
+  \centering
+  \begin{tikzpicture}[
+      entity/.style={
+        draw=navy, rounded corners, fill=lightgrey, align=left,
+        font=\tiny, text width=2.45cm, inner sep=4pt
+      },
+      derived/.style={
+        draw=orange, rounded corners, fill=orange!8, align=left,
+        font=\tiny, text width=2.45cm, inner sep=4pt
+      },
+      rel/.style={-{Stealth[length=1.6mm]}, draw=teal, thick},
+      node distance=6mm and 12mm
+    ]
+    \node[entity] (sensor) {
+      \textbf{SENSOR}\\
+      \underline{sensor\_id}\\status, notes
+    };
+    \node[entity, below=of sensor] (location) {
+      \textbf{SENSOR\_LOCATION\_HISTORY}\\
+      \underline{location\_id}\\sensor\_id (FK)\\latitude, longitude\\valid\_from, valid\_to
+    };
+    \node[entity, left=of location] (minute) {
+      \textbf{MINUTE\_COUNT}\\
+      \underline{sensor\_id (FK)}\\
+      \underline{observed\_at}\\total, directions\\quality\_status
+    };
+    \node[entity, right=of location] (hourly) {
+      \textbf{HOURLY\_COUNT}\\
+      \underline{sensor\_id (FK)}\\
+      \underline{observed\_hour}\\total, quality\_status
+    };
+
+    \node[entity, below left=9mm and 22mm of location] (place) {
+      \textbf{REFUGE\_CANDIDATE}\\
+      \underline{place\_id}\\category\_id (FK)\\name, coordinates\\validation\_status
+    };
+    \node[entity, below=9mm of location] (edge) {
+      \textbf{ROAD\_EDGE}\\
+      \underline{edge\_id}\\from/to node (FK)\\distance, walkability
+    };
+    \node[derived, below right=9mm and 22mm of location] (baseline) {
+      \textbf{CROWD\_BASELINE}\\
+      \underline{sensor\_id, weekday, hour}\\
+      percentiles, sample\_size\\calculated\_at
+    };
+    \node[derived, below=16mm of edge] (prediction) {
+      \textbf{CROWD\_PREDICTION}\\
+      \underline{sensor\_id, target\_hour}\\
+      predicted\_level\\confidence, model\_version
+    };
+
+    \draw[rel] (sensor) -- (location);
+    \draw[rel] (sensor) -- (minute);
+    \draw[rel] (sensor) -- (hourly);
+    \draw[rel] (hourly) -- (baseline);
+    \draw[rel] (baseline) -- (prediction);
+    \draw[rel] (minute) |- (prediction);
+    \draw[rel] (location) -- (edge);
+    \draw[rel] (place) -- (edge);
+  \end{tikzpicture}
+
+  \vspace{0.3em}
+  \scriptsize
+  Blue entities preserve imported facts; orange entities are reproducible,
+  versioned analytical outputs. Effective dates prevent relocated sensors from
+  being attached to the wrong historical position.
+\end{frame}
+
+\begin{frame}{Selected analytical approach: explainable first}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \column{0.49\textwidth}
+      \begin{block}{Crowd classification}
+        Compare each observation with the same sensor's historical distribution
+        for that weekday and hour:
+        \begin{itemize}
+          \item Low: at or below the 40th percentile;
+          \item Moderate: 40th--75th percentile;
+          \item High: above the 75th percentile.
+        \end{itemize}
+        This avoids one arbitrary threshold for differently sized locations.
+      \end{block}
+
+    \column{0.49\textwidth}
+      \begin{block}{Next-hour forecast}
+        Begin with an interpretable seasonal baseline:
+        \begin{enumerate}
+          \item historical median for sensor, weekday and hour;
+          \item adjustment using the most recent observation;
+          \item confidence based on sample size and data freshness;
+          \item validate using MAE and high-crowd alert precision/recall.
+        \end{enumerate}
+      \end{block}
+  \end{columns}
+
+  \vspace{0.3em}
+  \textbf{AI decision:} no opaque machine-learning model is required for
+  onboarding. A more complex model should be adopted only if time-based
+  validation proves that it improves forecasts without reducing explainability.
+
+  \vspace{0.4em}
+  \begin{alertblock}{Responsible interpretation}
+    Use ``lower observed pedestrian activity'' and ``candidate refuge'', not
+    ``sensory-safe''. Show stale-data warnings, geographic coverage gaps and
+    uncertainty to prevent false reassurance.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Data risks, mitigations and source links}
+  \small
+  \begin{tabularx}{\textwidth}{p{3.2cm}X}
+    \toprule
+    \textbf{Material risk} & \textbf{Planned mitigation} \\
+    \midrule
+    CBD sensors are not representative of every street &
+    Show monitored coverage and do not extrapolate beyond defensible distance. \\
+    Missing records have ambiguous meaning &
+    Check sensor status and neighbouring readings; retain an
+    unavailable/uncertain state rather than automatic interpolation. \\
+    Events or construction break historical patterns &
+    Lower forecast confidence and label these factors as outside current data
+    coverage unless an approved source is added. \\
+    A public facility may not be quiet or open &
+    Treat it as a candidate and add validation/opening-hours evidence before
+    recommending it as a refuge. \\
+    Public data can still be stale or altered &
+    Validate schema, retain checksummed snapshots and monitor last successful
+    ingestion. \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.35em}
+  \tiny
+  \textbf{Official sources (accessed August 2026):}\\
+  \source{https://data.melbourne.vic.gov.au/explore/dataset/pedestrian-counting-system-past-hour-counts-per-minute/}{Minute pedestrian counts}
+  \quad
+  \source{https://data.melbourne.vic.gov.au/explore/dataset/pedestrian-counting-system-monthly-counts-per-hour/}{Historical hourly counts}
+  \quad
+  \source{https://data.melbourne.vic.gov.au/explore/dataset/pedestrian-counting-system-sensor-locations/}{Sensor locations}\\
+  \source{https://data.melbourne.vic.gov.au/explore/dataset/landmarks-and-places-of-interest-including-schools-theatres-health-services-spor/}{Landmarks and places of interest}
+  \quad
+  \source{https://www.openstreetmap.org/copyright}{OpenStreetMap copyright and ODbL}
+  \quad
+  \source{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}
+
+  % Speaker notes:
+  % Close by emphasising traceability: every displayed recommendation should be
+  % explainable through a source record, a documented transformation and a
+  % versioned analytical rule.
+\end{frame}
+
+\end{document}
