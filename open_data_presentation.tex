@@ -9,21 +9,40 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 
-\definecolor{navy}{HTML}{17324D}
-\definecolor{teal}{HTML}{087E8B}
-\definecolor{green}{HTML}{3A7D44}
-\definecolor{orange}{HTML}{D96C06}
-\definecolor{lightblue}{HTML}{EAF4F6}
-\definecolor{lightgrey}{HTML}{F2F4F5}
+\definecolor{navy}{HTML}{172554}
+\definecolor{teal}{HTML}{4F46E5}
+\definecolor{green}{HTML}{059669}
+\definecolor{orange}{HTML}{F97316}
+\definecolor{cyan}{HTML}{0891B2}
+\definecolor{slate}{HTML}{334155}
+\definecolor{lightblue}{HTML}{EEF2FF}
+\definecolor{lightgrey}{HTML}{F8FAFC}
+\definecolor{lightcyan}{HTML}{ECFEFF}
 
 \usetheme{default}
+\setbeamercolor{normal text}{fg=slate,bg=lightgrey}
+\setbeamercolor{background canvas}{bg=lightgrey}
 \setbeamercolor{structure}{fg=teal}
-\setbeamercolor{frametitle}{fg=navy}
+\setbeamercolor{frametitle}{fg=white,bg=navy}
 \setbeamercolor{title}{fg=navy}
 \setbeamercolor{block title}{bg=teal,fg=white}
 \setbeamercolor{block body}{bg=lightblue,fg=black}
+\setbeamercolor{block title alerted}{bg=orange,fg=white}
+\setbeamercolor{block body alerted}{bg=orange!10,fg=slate}
+\setbeamercolor{itemize item}{fg=teal}
+\setbeamercolor{itemize subitem}{fg=cyan}
+\setbeamercolor{enumerate item}{fg=teal}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamertemplate{itemize item}{\raise0.15ex\hbox{\scriptsize$\blacktriangleright$}}
+\setbeamertemplate{itemize subitem}{\raise0.1ex\hbox{\tiny$\bullet$}}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{footline}{}
+\setbeamertemplate{frametitle}{
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.2ex,dp=1.1ex,leftskip=0.7cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}
+}
 
 \newcommand{\source}[2]{\href{#1}{\textcolor{teal}{#2}}}
 
@@ -135,7 +154,7 @@
   \begin{tikzpicture}[
       node distance=5mm and 4mm,
       box/.style={
-        draw=teal, rounded corners, fill=lightblue, align=center,
+        draw=cyan, rounded corners, fill=lightcyan, align=center,
         minimum width=2.2cm, minimum height=1.0cm, font=\scriptsize
       },
       arrow/.style={-{Stealth[length=2mm]}, thick, draw=navy}
