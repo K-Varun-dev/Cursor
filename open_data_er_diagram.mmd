@@ -1,0 +1,124 @@
+%% Sensory-Friendly Melbourne CBD — planned conceptual ERD
+%% Paste into https://mermaid.live or any Mermaid-supported editor
+
+erDiagram
+    DATA_SOURCE ||--o{ SENSOR : provides
+    DATA_SOURCE ||--o{ REFUGE_CANDIDATE : provides
+    DATA_SOURCE ||--o{ ROAD_EDGE : "OSM snapshot"
+
+    SENSOR ||--o{ SENSOR_LOCATION_HISTORY : "has history"
+    SENSOR ||--o{ MINUTE_COUNT : records
+    SENSOR ||--o{ HOURLY_COUNT : aggregates
+    SENSOR ||--o{ CROWD_BASELINE : "baseline for"
+    SENSOR ||--o{ CROWD_OBSERVATION : "classifies"
+    SENSOR ||--o{ CROWD_PREDICTION : forecasts
+
+    PLACE_CATEGORY ||--o{ REFUGE_CANDIDATE : classifies
+
+    ROAD_NODE ||--o{ ROAD_EDGE : "from node"
+    ROAD_NODE ||--o{ ROAD_EDGE : "to node"
+
+    HOURLY_COUNT }o..o{ CROWD_BASELINE : "feeds calculation"
+    CROWD_BASELINE ||--o{ CROWD_PREDICTION : "informs"
+    MINUTE_COUNT }o..o{ CROWD_OBSERVATION : "feeds calculation"
+    MINUTE_COUNT }o..o{ CROWD_PREDICTION : "adjusts"
+
+    DATA_SOURCE {
+        int source_id PK
+        string name
+        string source_url
+        string licence
+        string source_update_frequency
+        datetime last_ingested_at
+    }
+
+    SENSOR {
+        int sensor_id PK
+        int source_id FK
+        string status
+        string notes
+    }
+
+    SENSOR_LOCATION_HISTORY {
+        int location_id PK
+        int sensor_id FK
+        float latitude
+        float longitude
+        string direction_1
+        string direction_2
+        datetime valid_from
+        datetime valid_to
+    }
+
+    MINUTE_COUNT {
+        int sensor_id FK
+        datetime observed_at
+        int direction_1_count
+        int direction_2_count
+        int total_count
+        string quality_status
+    }
+
+    HOURLY_COUNT {
+        int sensor_id FK
+        datetime observed_hour
+        int total_count
+        string quality_status
+    }
+
+    PLACE_CATEGORY {
+        int category_id PK
+        string theme
+        string sub_theme
+    }
+
+    REFUGE_CANDIDATE {
+        int place_id PK
+        int source_id FK
+        int category_id FK
+        string name
+        float latitude
+        float longitude
+        string validation_status
+    }
+
+    ROAD_NODE {
+        long node_id PK
+        float latitude
+        float longitude
+    }
+
+    ROAD_EDGE {
+        long edge_id PK
+        long from_node_id FK
+        long to_node_id FK
+        float distance_m
+        boolean walkable
+        string osm_way_ref
+    }
+
+    CROWD_BASELINE {
+        int sensor_id FK
+        int weekday
+        int hour_of_day
+        int p40_count
+        int p75_count
+        int sample_size
+        datetime calculated_at
+    }
+
+    CROWD_OBSERVATION {
+        int sensor_id FK
+        datetime observed_at
+        string crowd_level
+        float confidence
+        string model_version
+    }
+
+    CROWD_PREDICTION {
+        int sensor_id FK
+        datetime target_hour
+        string predicted_level
+        float confidence
+        string model_version
+    }

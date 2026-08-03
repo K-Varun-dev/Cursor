@@ -1,0 +1,36 @@
+%% Simple onboarding ERD — easy to explain in a 2–3 minute walkthrough
+%% Paste into https://mermaid.live
+
+erDiagram
+    SENSOR ||--o{ CROWD_READING : "measures at"
+    SENSOR ||--o{ CROWD_SUMMARY : "summarises into"
+
+    SENSOR {
+        int sensor_id PK
+        string sensor_name
+        float latitude
+        float longitude
+        string status
+    }
+
+    CROWD_READING {
+        int sensor_id FK
+        datetime recorded_at
+        int pedestrian_count
+        string data_source
+    }
+
+    CROWD_SUMMARY {
+        int sensor_id FK
+        string period_type
+        string crowd_level
+        string confidence
+    }
+
+    QUIET_PLACE {
+        int place_id PK
+        string name
+        string place_type
+        float latitude
+        float longitude
+    }
