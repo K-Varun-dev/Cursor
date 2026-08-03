@@ -197,75 +197,50 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Planned ERD: source data, geography and derived insight}
+\begin{frame}{Simple ERD: four ideas we store}
   \centering
   \begin{tikzpicture}[
-      scale=0.78,
-      transform shape,
       entity/.style={
-        draw=navy, rounded corners, fill=lightgrey, align=left,
-        font=\tiny, text width=2.45cm, inner sep=4pt
+        draw=navy, rounded corners, fill=lightblue, align=left,
+        font=\small, text width=4.6cm, inner sep=6pt
       },
       derived/.style={
-        draw=orange, rounded corners, fill=orange!8, align=left,
-        font=\tiny, text width=2.45cm, inner sep=4pt
+        draw=orange, rounded corners, fill=orange!10, align=left,
+        font=\small, text width=4.6cm, inner sep=6pt
       },
-      rel/.style={-{Stealth[length=1.6mm]}, draw=teal, thick},
-      node distance=6mm and 12mm
+      rel/.style={-{Stealth[length=2mm]}, thick, draw=teal},
+      node distance=10mm
     ]
     \node[entity] (sensor) {
       \textbf{SENSOR}\\
-      \underline{sensor\_id}\\status, notes
+      Where we measure in the CBD\\
+      \textit{sensor\_id, name, lat/lon, status}
     };
-    \node[entity, below=of sensor] (location) {
-      \textbf{SENSOR\_LOCATION\_HISTORY}\\
-      \underline{location\_id}\\sensor\_id (FK)\\latitude, longitude\\valid\_from, valid\_to
+    \node[entity, below=of sensor] (reading) {
+      \textbf{CROWD\_READING}\\
+      Raw counts from open data\\
+      \textit{sensor\_id, recorded\_at, count}
     };
-    \node[entity, left=of location] (minute) {
-      \textbf{MINUTE\_COUNT}\\
-      \underline{sensor\_id (FK)}\\
-      \underline{observed\_at}\\total, directions\\quality\_status
+    \node[derived, below=of reading] (summary) {
+      \textbf{CROWD\_SUMMARY}\\
+      What the user sees\\
+      \textit{crowd level, confidence, now / typical / next hour}
     };
-    \node[entity, right=of location] (hourly) {
-      \textbf{HOURLY\_COUNT}\\
-      \underline{sensor\_id (FK)}\\
-      \underline{observed\_hour}\\total, quality\_status
-    };
-
-    \node[entity, below left=9mm and 22mm of location] (place) {
-      \textbf{REFUGE\_CANDIDATE}\\
-      \underline{place\_id}\\category\_id (FK)\\name, coordinates\\validation\_status
-    };
-    \node[entity, below=9mm of location] (edge) {
-      \textbf{ROAD\_EDGE}\\
-      \underline{edge\_id}\\from/to node (FK)\\distance, walkability
-    };
-    \node[derived, below right=9mm and 22mm of location] (baseline) {
-      \textbf{CROWD\_BASELINE}\\
-      \underline{sensor\_id, weekday, hour}\\
-      percentiles, sample\_size\\calculated\_at
-    };
-    \node[derived, below=16mm of edge] (prediction) {
-      \textbf{CROWD\_PREDICTION}\\
-      \underline{sensor\_id, target\_hour}\\
-      predicted\_level\\confidence, model\_version
+    \node[entity, right=18mm of reading] (place) {
+      \textbf{QUIET\_PLACE}\\
+      Candidate break spots\\
+      \textit{place\_id, name, type, lat/lon}
     };
 
-    \draw[rel] (sensor) -- (location);
-    \draw[rel] (sensor) -- (minute);
-    \draw[rel] (sensor) -- (hourly);
-    \draw[rel] (hourly) -- (baseline);
-    \draw[rel] (baseline) -- (prediction);
-    \draw[rel] (minute) |- (prediction);
-    \draw[rel] (location) -- (edge);
-    \draw[rel] (place) -- (edge);
+    \draw[rel] (sensor) -- (reading);
+    \draw[rel] (reading) -- (summary);
   \end{tikzpicture}
 
-  \vspace{0.3em}
-  \scriptsize
-  Blue entities preserve imported facts; orange entities are reproducible,
-  versioned analytical outputs. Effective dates prevent relocated sensors from
-  being attached to the wrong historical position.
+  \vspace{0.5em}
+  \small
+  \textbf{Explain in one line:} sensors collect readings; we turn readings into simple
+  crowd summaries; quiet places are shown nearby on the map when needed.\\
+  \textit{Walking routes (OpenStreetMap) sit in the app layer---omitted here to keep the model easy to explain.}
 \end{frame}
 
 \begin{frame}{Selected analytical approach: explainable first}

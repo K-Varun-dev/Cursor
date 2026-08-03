@@ -373,61 +373,88 @@ def slide_pipeline(prs: Presentation) -> None:
 def slide_erd(prs: Presentation) -> None:
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_slide_bg(slide, LIGHT_GREY)
-    add_title_bar(slide, "Planned ERD: source data, geography and derived insight")
+    add_title_bar(slide, "Simple ERD: four ideas we store")
 
+    # Left column: crowd chain
     entities = [
-        ("SENSOR", "sensor_id, status, notes", False),
-        ("SENSOR_LOCATION_HISTORY", "location_id, sensor_id, lat/lon, valid_from/to", False),
-        ("MINUTE_COUNT", "sensor_id, observed_at, totals, quality_status", False),
-        ("HOURLY_COUNT", "sensor_id, observed_hour, total, quality_status", False),
-        ("REFUGE_CANDIDATE", "place_id, category, name, coords, validation", False),
-        ("ROAD_EDGE", "edge_id, from/to node, distance, walkability", False),
-        ("CROWD_BASELINE", "sensor_id, weekday, hour, percentiles", True),
-        ("CROWD_PREDICTION", "sensor_id, target_hour, level, confidence", True),
+        ("SENSOR", "Where in the CBD we measure\n(sensor_id, name, lat/lon, status)", False, 0.5, 1.2),
+        (
+            "CROWD_READING",
+            "Raw open-data counts over time\n(sensor_id, recorded_at, count)",
+            False,
+            0.5,
+            2.85,
+        ),
+        (
+            "CROWD_SUMMARY",
+            "What the user sees\n(sensor_id, crowd level, confidence,\nnow / typical / next hour)",
+            True,
+            0.5,
+            4.5,
+        ),
+        (
+            "QUIET_PLACE",
+            "Candidate break spots from landmarks\n(place_id, name, type, lat/lon)",
+            False,
+            7.2,
+            2.2,
+        ),
     ]
-    positions = [
-        (1.0, 1.1),
-        (5.0, 1.1),
-        (9.0, 1.1),
-        (1.0, 2.55),
-        (5.0, 2.55),
-        (9.0, 2.55),
-        (2.5, 4.05),
-        (7.5, 4.05),
-    ]
-    for (name, fields, derived), (lx, ty) in zip(entities, positions):
+    for name, fields, derived, lx, ty in entities:
         shape = slide.shapes.add_shape(
             MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
             Inches(lx),
             Inches(ty),
-            Inches(3.1),
-            Inches(1.15),
+            Inches(5.5 if lx < 5 else 5.2),
+            Inches(1.35 if "SUMMARY" not in name else 1.55),
         )
-        fill = RGBColor(0xFF, 0xF7, 0xED) if derived else LIGHT_GREY
+        fill = RGBColor(0xFF, 0xF7, 0xED) if derived else LIGHT_BLUE
         shape.fill.solid()
         shape.fill.fore_color.rgb = fill
-        shape.line.color.rgb = ORANGE if derived else NAVY
+        shape.line.color.rgb = ORANGE if derived else INDIGO
         tf = shape.text_frame
         tf.clear()
         t = tf.paragraphs[0]
         t.text = name
         t.font.bold = True
-        t.font.size = Pt(9)
+        t.font.size = Pt(14)
         t.font.color.rgb = ORANGE if derived else NAVY
         b = tf.add_paragraph()
         b.text = fields
-        b.font.size = Pt(8)
+        b.font.size = Pt(10)
         b.font.color.rgb = SLATE
+
+    # Arrows: SENSOR -> READING -> SUMMARY
+    for top in (1.75, 3.45):
+        slide.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.DOWN_ARROW,
+            Inches(2.5),
+            Inches(top),
+            Inches(0.35),
+            Inches(0.55),
+        ).fill.solid()
+
+    add_text_box(
+        slide,
+        Inches(7.2),
+        Inches(4.0),
+        Inches(5.5),
+        Inches(1.0),
+        "Quiet places are a separate map layer.\nThe app shows “nearby” refuges when crowd is high—no direct database link needed at onboarding.",
+        font_size=10,
+        color=SLATE,
+    )
 
     add_text_box(
         slide,
         Inches(0.35),
-        Inches(5.35),
+        Inches(6.15),
         Inches(12.6),
-        Inches(0.55),
-        "Grey = imported facts. Orange = versioned analytical outputs. Location history prevents wrong map positions after sensor moves.",
+        Inches(0.45),
+        "Walking routes use OpenStreetMap in the app layer; kept off this diagram to stay simple.",
         font_size=10,
-        color=SLATE,
+        bold=True,
+        color=NAVY,
     )
 
 
