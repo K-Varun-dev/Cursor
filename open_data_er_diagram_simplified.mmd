@@ -1,0 +1,56 @@
+%% Simplified conceptual ERD (onboarding) — medium detail
+%% Full version: open_data_er_diagram.mmd
+
+erDiagram
+    SENSOR ||--o{ SENSOR_LOCATION : "located at"
+    SENSOR ||--o{ PEDESTRIAN_COUNT : measures
+    SENSOR ||--o{ CROWD_METRIC : derives
+
+    PEDESTRIAN_COUNT }o..o{ CROWD_METRIC : "feeds analytics"
+
+    SENSOR {
+        int sensor_id PK
+        string status
+        string notes
+    }
+
+    SENSOR_LOCATION {
+        int location_id PK
+        int sensor_id FK
+        float latitude
+        float longitude
+        datetime valid_from
+        datetime valid_to
+    }
+
+    PEDESTRIAN_COUNT {
+        int sensor_id FK
+        datetime observed_at
+        string granularity "minute or hour"
+        int total_count
+        string quality_status
+    }
+
+    REFUGE_PLACE {
+        int place_id PK
+        string name
+        string place_type "park library etc"
+        float latitude
+        float longitude
+        string validation_status
+    }
+
+    WALK_SEGMENT {
+        int segment_id PK
+        string osm_ref
+        float distance_m
+        boolean walkable
+    }
+
+    CROWD_METRIC {
+        int sensor_id FK
+        datetime metric_time
+        string metric_type "baseline current forecast"
+        string crowd_level "low moderate high"
+        float confidence
+    }

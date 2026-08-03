@@ -1,5 +1,8 @@
 # Lucidchart — ERD build guide
 
+**Simplified diagram (recommended for slides):** `open_data_er_diagram_simplified.mmd` (6 entities).  
+**Full diagram (data management plan):** `open_data_er_diagram.mmd`.
+
 Use this with [Lucidchart](https://www.lucidchart.com) → **Entity Relationship** template (or blank + ERD shapes).
 
 ## Quick option: Mermaid import
