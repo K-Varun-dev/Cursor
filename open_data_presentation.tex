@@ -23,17 +23,7 @@
 \setbeamercolor{block title}{bg=teal,fg=white}
 \setbeamercolor{block body}{bg=lightblue,fg=black}
 \setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{footline}{
-  \leavevmode
-  \hbox{
-    \begin{beamercolorbox}[wd=.84\paperwidth,ht=2.5ex,dp=1ex,leftskip=1em]{author in head/foot}
-      Open Data --- Sensory-Friendly Melbourne CBD Navigation
-    \end{beamercolorbox}
-    \begin{beamercolorbox}[wd=.16\paperwidth,ht=2.5ex,dp=1ex,center]{date in head/foot}
-      \insertframenumber/\inserttotalframenumber
-    \end{beamercolorbox}
-  }
-}
+\setbeamertemplate{footline}{}
 
 \newcommand{\source}[2]{\href{#1}{\textcolor{teal}{#2}}}
 
@@ -43,20 +33,6 @@
 \date{August 2026}
 
 \begin{document}
-
-\begin{frame}
-  \titlepage
-  \begin{block}{Purpose}
-    Convert anonymous pedestrian observations and open geographic data into
-    transparent crowd guidance for sensory-sensitive adults travelling through
-    Melbourne CBD.
-  \end{block}
-
-  % Speaker notes:
-  % Our data does not diagnose sensory overload or label a place as universally
-  % safe. It provides evidence about one important stressor---pedestrian density---
-  % so users can make a more informed and independent travel decision.
-\end{frame}
 
 \begin{frame}{The five datasets we actually need}
   \scriptsize
@@ -205,6 +181,8 @@
 \begin{frame}{Planned ERD: source data, geography and derived insight}
   \centering
   \begin{tikzpicture}[
+      scale=0.78,
+      transform shape,
       entity/.style={
         draw=navy, rounded corners, fill=lightgrey, align=left,
         font=\tiny, text width=2.45cm, inner sep=4pt
